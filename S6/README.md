@@ -1,6 +1,6 @@
 # MNIST-CNN
 
-The CNN architecture has been trained on the MNIST Dataset for recognizing Hand written Digits, and the architecture has attained an accuracy of **99.45%** with **19,574** Params and less than **20 epochs**.
+The CNN architecture has been trained on the MNIST Dataset for recognizing Hand written Digits, and the architecture has attained an accuracy of **99.57%** with **19,574** Params and less than **20 epochs**.
 
 After Every Convolution Layer there is a ReLU Activation Layer followed by Batch Normalization and a dropout layer with probability of 0.05. 
 
