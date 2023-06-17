@@ -40,41 +40,8 @@ class Net1(nn.Module):
         x = x.view(-1, 10)
         return F.log_softmax(x, dim=-1)
 
+
 class Net2(nn.Module):
-    def __init__(self):
-        super(Net2, self).__init__()
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(1, 32, 3), # Convolution layer 1 - input 28 x 28 x 1 : Output 26 x 26 x 32 : RF 3 x 3
-            nn.ReLU(), 
-            nn.Conv2d(32, 32, 3), # Convolution Layer 2 - input 26 x 26 x 32 : Output 24 x 24 x 32 : RF 5 x 5
-            nn.ReLU(), 
-            nn.Conv2d(32, 32, 3), # Convolution Layer 3 - input 24 x 24 x 32 : Output 22 x 22 x 32 : RF 7 x 7
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2) # Max Pooling Layer - input 22 x 22 x 32 : Output 11 x 11 x 32 : RF 8 x 8
-        )
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(32, 64, 3), # Convolution Layer 4 - input 11 x 11 x 32 : Output 9 x 9 x 64 : RF 12 x 12
-            nn.ReLU(),
-            nn.Conv2d(64, 64, 3), # Convolution Layer 5 - input 9 x 9 x 64 : Output 7 x 7 x 64 : RF 16 x 16
-            nn.ReLU(),
-            nn.Conv2d(64, 64, 3), # Convolution Layer 6 - input 7 x 7 x 64 : Output 5 x 5 x 64 : RF 20 x 20
-            nn.ReLU(),
-        )
-
-        self.conv3 = nn.Sequential(
-            nn.Conv2d(64, 10, 1), # Convolution Layer 7 - input 5 x 5 x 64 : Output 5 x 5 x 10 : RF 20 x 20
-            nn.ReLU(),
-            nn.Conv2d(10, 10, 5), # Convolution Layer 8 - input 5 x 5 x 10 : Output 1 x 1 x 10 : RF 28 x 28
-        )
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = x.view(-1, 10)
-        return F.log_softmax(x, dim=-1)
-
-class Net3(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Sequential(
@@ -115,7 +82,7 @@ class Net3(nn.Module):
         x = x.view(-1, 10)
         return F.log_softmax(x, dim=-1)
 
-class Net4(nn.Module):
+class Net3(nn.Module):
     def __init__(self):
         super(Net4, self).__init__()
         self.conv1 = nn.Sequential(
