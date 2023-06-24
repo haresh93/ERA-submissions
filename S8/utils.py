@@ -11,18 +11,18 @@ def print_train_data_stats():
                                       #  transforms.Normalize((0.1307,), (0.3081,)) # The mean and std have to be sequences (e.g., tuples), therefore you should add a comma after the values. 
                                        # Note the difference between (0.1307) and (0.1307,)
                                        ])
-    exp = datasets.MNIST('./data', train=True, download=True, transform=simple_transforms)
-    exp_data = exp.train_data
-    exp_data = exp.transform(exp_data.numpy())
+    exp = datasets.CIFAR10('../data', train=True, download=True, transform=simple_transforms)
+    exp_data = exp.data.astype(float)
+    #exp_data = exp.transform(exp_data.numpy())
+    exp_tensor = torch.as_tensor(exp_data)
 
     print('[Train]')
-    print(' - Numpy Shape:', exp.train_data.cpu().numpy().shape)
-    print(' - Tensor Shape:', exp.train_data.size())
-    print(' - min:', torch.min(exp_data))
-    print(' - max:', torch.max(exp_data))
-    print(' - mean:', torch.mean(exp_data))
-    print(' - std:', torch.std(exp_data))
-    print(' - var:', torch.var(exp_data))
+    print(' - Numpy Shape:', exp_data.shape)
+    print(' - min:', torch.min(exp_tensor))
+    print(' - max:', torch.max(exp_tensor))
+    print(' - mean:', torch.mean(exp_tensor))
+    print(' - std:', torch.std(exp_tensor))
+    print(' - var:', torch.var(exp_tensor))
 
 def plot_train_data(train_loader):
     batch_data, batch_label = next(iter(train_loader)) 

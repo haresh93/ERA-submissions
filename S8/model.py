@@ -7,16 +7,16 @@ import matplotlib.pyplot as plt
 from utils import get_correct_pred_count
 from tqdm import tqdm
 
-GROUP_SIZE = 4
+GROUP_SIZE = 8
 
 class Normalization(Enum):
     BATCH_NORMALIZATION = 1
     LAYER_NORMALIZATION = 2
     GROUP_NORMALIZATION = 3
 
-def conv_block(in_channels, out_channels, normalization, kernel_size = 3, pool=False, activation=True):
+def conv_block(in_channels, out_channels, normalization, kernel_size = 3, pool=False, padding=0, activation=True):
     layers = [
-        nn.Conv2d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = 0),
+        nn.Conv2d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = padding),
     ]
 
     # Adding normalization layer
@@ -44,21 +44,21 @@ def conv_block(in_channels, out_channels, normalization, kernel_size = 3, pool=F
 class NetBN(nn.Module):
     def __init__(self):
         super(NetBN, self).__init__()
-        self.conv1 = conv_block(3, 64, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv2 = conv_block(64, 128, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv3 = conv_block(128, 64, Normalization.BATCH_NORMALIZATION, kernel_size = 1, pool = True)
+        self.conv1 = conv_block(3, 8, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv2 = conv_block(8, 16, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv3 = conv_block(16, 8, Normalization.BATCH_NORMALIZATION, kernel_size = 1, pool = True, padding=1)
 
-        self.conv4 = conv_block(64, 128, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv5 = conv_block(128, 256, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv6 = conv_block(256, 512, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv7 = conv_block(512, 64, Normalization.BATCH_NORMALIZATION, kernel_size = 1, pool = True)
+        self.conv4 = conv_block(8, 16, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv5 = conv_block(16, 32, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv6 = conv_block(32, 32, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv7 = conv_block(32, 16, Normalization.BATCH_NORMALIZATION, kernel_size = 1, pool = True, padding=1)
 
-        self.conv8 = conv_block(64, 128, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv9 = conv_block(128, 256, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
-        self.conv10 = conv_block(256, 512, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv8 = conv_block(16, 32, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv9 = conv_block(32, 32, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv10 = conv_block(32, 32, Normalization.BATCH_NORMALIZATION, kernel_size = 3, pool = False)
         
-        self.gap = nn.AdaptiveAvgPool2d(128)
-        self.conv11 = conv_block(128, 10, None, kernel_size = 1, pool = False, activation = False)
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.conv11 = conv_block(32, 10, None, kernel_size = 1, pool = False, activation = False)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -71,6 +71,79 @@ class NetBN(nn.Module):
         x = self.conv8(x)
         x = self.conv9(x)
         x = self.conv10(x)
+        x = self.gap(x)
+        x = self.conv11(x)
+
+        x = x.view(-1, 10)
+        return F.log_softmax(x, dim=-1)
+
+class NetLN(nn.Module):
+    def __init__(self):
+        super(NetLN, self).__init__()
+        self.conv1 = conv_block(3, 8, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv2 = conv_block(8, 16, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv3 = conv_block(16, 8, Normalization.LAYER_NORMALIZATION, kernel_size = 1, pool = True, padding=1)
+
+        self.conv4 = conv_block(8, 16, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv5 = conv_block(16, 32, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv6 = conv_block(32, 32, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv7 = conv_block(32, 16, Normalization.LAYER_NORMALIZATION, kernel_size = 1, pool = True, padding=1)
+
+        self.conv8 = conv_block(16, 32, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv9 = conv_block(32, 32, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv10 = conv_block(32, 32, Normalization.LAYER_NORMALIZATION, kernel_size = 3, pool = False)
+        
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.conv11 = conv_block(32, 10, None, kernel_size = 1, pool = False, activation = False)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.conv6(x)
+        x = self.conv7(x)
+        x = self.conv8(x)
+        x = self.conv9(x)
+        x = self.conv10(x)
+        x = self.gap(x)
+        x = self.conv11(x)
+
+        x = x.view(-1, 10)
+        return F.log_softmax(x, dim=-1)
+
+class NetGN(nn.Module):
+    def __init__(self):
+        super(NetGN, self).__init__()
+        self.conv1 = conv_block(3, 8, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv2 = conv_block(8, 16, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv3 = conv_block(16, 8, Normalization.GROUP_NORMALIZATION, kernel_size = 1, pool = True, padding=1)
+
+        self.conv4 = conv_block(8, 16, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv5 = conv_block(16, 32, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv6 = conv_block(32, 32, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False, padding=1)
+        self.conv7 = conv_block(32, 16, Normalization.GROUP_NORMALIZATION, kernel_size = 1, pool = True, padding=1)
+
+        self.conv8 = conv_block(16, 32, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv9 = conv_block(32, 32, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False)
+        self.conv10 = conv_block(32, 32, Normalization.GROUP_NORMALIZATION, kernel_size = 3, pool = False)
+        
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.conv11 = conv_block(32, 10, None, kernel_size = 1, pool = False, activation = False)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.conv6(x)
+        x = self.conv7(x)
+        x = self.conv8(x)
+        x = self.conv9(x)
+        x = self.conv10(x)
+        x = self.gap(x)
         x = self.conv11(x)
 
         x = x.view(-1, 10)
@@ -157,8 +230,8 @@ def draw_graphs():
 def plot_misclassified_images():
   fig = plt.figure(figsize = (10,10))
   for i in range(10):
-        sub = fig.add_subplot(5, 2, i+1)
-        plt.imshow(misclassified_images[i][0].cpu().numpy().squeeze(),cmap='gray',interpolation='none')
+        sub = fig.add_subplot(2, 5, i+1)
+        plt.imshow(misclassified_images[i][0].cpu().numpy().squeeze().T)
         
         sub.set_title("Pred={}, Act={}".format(str(misclassified_images[i][1].data.cpu().numpy()),str(misclassified_images[i][2].data.cpu().numpy())))
         
