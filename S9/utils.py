@@ -17,3 +17,6 @@ def display_image_grid(images_filepaths, predicted_labels=(), cols=5):
     plt.tight_layout()
     plt.show()
 
+
+def get_correct_pred_count(prediction, labels):
+    return prediction.argmax(dim=1).eq(labels).sum().item()
