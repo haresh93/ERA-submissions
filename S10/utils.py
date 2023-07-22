@@ -2,6 +2,10 @@ import cv2
 import matplotlib.pyplot as plt
 
 
+def get_lr(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+
 def display_image_grid(images_filepaths, predicted_labels=(), cols=5):
     rows = len(images_filepaths) // cols
     figure, ax = plt.subplots(nrows=rows, ncols=cols, figsize=(12, 6))
