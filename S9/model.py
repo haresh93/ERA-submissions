@@ -15,14 +15,14 @@ class Net(nn.Module):
             nn.Conv2d(in_channels = 3, out_channels = 32, kernel_size=(3,3), padding = 1, bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(32),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels = 32, out_channels = 32, groups = 32, kernel_size = (3,3), padding = 1, bias = False),
             nn.Conv2d(in_channels = 32, out_channels = 128, kernel_size = (1,1), padding=0, bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(128),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
 
         # Transition Block 1
@@ -36,7 +36,7 @@ class Net(nn.Module):
             nn.Conv2d(in_channels = 64, out_channels = 128, kernel_size = (1,1), padding = 0,bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(128),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
 
         self.conv5 = nn.Sequential(
@@ -44,7 +44,7 @@ class Net(nn.Module):
             nn.Conv2d(in_channels = 128, out_channels = 128, kernel_size = (1,1), padding = 0, bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(128),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
 
         # Transition Block 2
@@ -58,7 +58,7 @@ class Net(nn.Module):
             nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = (1,1), padding = 0, bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
 
         self.conv8 = nn.Sequential(
@@ -66,7 +66,7 @@ class Net(nn.Module):
             nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = (1,1), padding = 0, bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
 
         self.conv9 = nn.Sequential(
@@ -74,7 +74,7 @@ class Net(nn.Module):
             nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = (1,1), padding = 0, bias = False),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.Dropout(0.5)
+            nn.Dropout(0.05)
         )
 
         self.gap = nn.AdaptiveAvgPool2d(1)
