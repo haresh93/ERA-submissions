@@ -1,75 +1,26 @@
 ## CIFAR10 Classification using Advanced Convolutions and Albumentations
 
-In this repository, we have created a model with CNN using depthwise Convolution and Grouped Convolutions and using Albumentations image augmentation library.
+In this repository, we have created a model with CNN using depthwise Convolution and Grouped Convolutions and using Albumentations image augmentation library and got an accuracy of **86.10%**
 
-The repository is structured in a modular way, where we have `model.py`, `dataset.py` and `utils.py` files which contain the model,  the dataset and the utility functions respectively.
+### Reposity Walkthrough
 
-There are 3 models in the `model.py` file with following names:
+The repository is structured in a modular way, where we have the following files `model.py`, `dataset.py`,  `utils.py`:
+- `model.py`  - This file consists of the model with depthwise convolutions and Dilated and Strided convolutions without using any MaxPooling layer 
+- `dataset.py` - It consists a `Cifar10SearchDataset` class which extends the `torchvision.datasets.CIFAR10` class and overrides the `__getitem__` method by applying the albumentations transforms
+- `utils.py` - This file consists of the some utility functions which are used for displaying the graphs of traning and testing losses and accuracies over epochs and so on.
 
-`NetBN` - Network with Batch Normalization
+### CNN Model 
 
-`NetLN` - Network with Layer Normalization
+We have used a pure convolutional network using Depthwise convolutions and in place of Max Pooling layer we have used Dilated and Strided Convolutions together
 
-`NetGN` - Network with Group Normalization
+**Total Parameters used: 194880**
 
-We have used a standard Network for the architecture as follows:
-
-**Total Parameters used: 41026**
-
-<img width="476" alt="Network" src="https://github.com/haresh93/ERA-submissions/assets/9997345/cfb222ad-a121-460b-925a-57c356339cf3">
-
+## Image Augmentation Techniques used
 The following Image Augmentation techniques were used:
 
-**RandomCrop(32, padding=4, padding_mode='reflect')** - This will crop at a random location in the image by padding it by 4px and with output size at 32 x 32
+- **HorizontalFlip()** - For Horizontal Flipping the image as the CIFAR dataset the objects can flipped horizontally and then also we should be able to identity it as the same label for example Car when flipped horizontal looks like a car only
 
-**RandomHorizontalFlip()** - Horizontally flips the image randomly with a probability of 0.5 
+- **ShiftScaleRotate(shift_limit=0.2, scale_limit=0.2, rotate_limit=15, p=0.5)** - Shifting the image, scaling the image and rotating the 15 degrees
 
-### Observations
-
-1. Batch Normalization has performed very well among all the 3 models with the same architecture and parameters where it was able to get to 77.28% test accuracy.
-2. BN achieved an accuracy of 70% in the 6th epoch itself, but in the Layer Normalization it was at 16th epoch, in Group Normalization at 13th epoch.
-3. Group Normalization has performed better than Layer Normalization as it achieved both better training and test accuracy.
-4. This shows that for Convolutional Neural Networks Batch Normalization is a better one to use.
-
-
-### Model using Batch Normalization
-
-Training Accuracy: 73.70%
-
-Test Accuracy: 77.28%
-
-Results:
-<img width="986" alt="BN-results" src="https://github.com/haresh93/ERA-submissions/assets/9997345/2f3f9b2d-3e07-4bad-adbb-4f54cd2c27c6">
-
-Below are the misclassified images:
-
-<img width="1031" alt="BN-misclassified" src="https://github.com/haresh93/ERA-submissions/assets/9997345/1439f57a-6d76-4401-af82-136a465eb8bf">
-
-### Model using Layer Normalization
-
-Training Accuracy: 67.72%
-
-Test Accuracy: 72.75%
-
-Results:
-
-<img width="986" alt="LN-results" src="https://github.com/haresh93/ERA-submissions/assets/9997345/c4212c69-def6-4a3e-8912-26af028bfba5">
-
-Below are the misclassified images:
-
-<img width="825" alt="LN-misclassified" src="https://github.com/haresh93/ERA-submissions/assets/9997345/a235260b-b963-4f8b-a1b3-2674a3e82b8b">
-
-### Model using Group Normalization with Group Size 8
-
-Training Accuracy: 68.08%
-
-Test Accuracy: 74.06
-
-Results: 
-
-<img width="977" alt="GN-results" src="https://github.com/haresh93/ERA-submissions/assets/9997345/8473cfde-18fd-471b-94e8-cc258813539e">
-
-Below are the misclassified images: 
-
-<img width="813" alt="GN-misclassified" src="https://github.com/haresh93/ERA-submissions/assets/9997345/45af5690-3cff-4532-9294-9baa75e37ab0">
+- **CoarseDropout(max_holes = 1, max_height=16, max_width=16, min_holes = 1, min_height=16, min_width=16, fill_value=(0.4914, 0.4822, 0.4465), mask_fill_value = None)** - This is the Cutout strategy 
 
