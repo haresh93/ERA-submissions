@@ -14,9 +14,11 @@ The repository is structured in a modular way, where we have the following files
 
 We are using a custom resnet model with 2 residual blocks and skip connections in the model, as shown in the below diagram.
 
+<img width="849" alt="Screenshot 2023-07-23 at 5 41 57 AM" src="https://github.com/haresh93/ERA-submissions/assets/9997345/e7b116bd-fff5-417d-b4d0-a39147e7150d">
 
 The total number of parameters used in the model are **6575370** parameters. Below is the model summary:
 
+<img width="567" alt="Screenshot 2023-07-23 at 7 41 11 AM" src="https://github.com/haresh93/ERA-submissions/assets/9997345/977229a7-95ce-4141-9d5a-4b5dab6ce247">
 
 ### Training
 
@@ -30,6 +32,8 @@ Observation: Initially we have tried with a higher learning rate of **0.1** and 
 ### One Cycle LR Policy
 
 We have used One Cycle LR scheduler for faster training of the model and we have used the `torch_lr_finder` package for finding the Maximum LR, below is output of the range test from the `torch_lr_finder`:
+
+<img width="1118" alt="Screenshot 2023-07-23 at 7 41 49 AM" src="https://github.com/haresh93/ERA-submissions/assets/9997345/717614ef-6ed9-4bca-8428-ae83d3b9c901">
 
 Hence here are the parameters for the One Cycle LR:
 
