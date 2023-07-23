@@ -15,6 +15,9 @@ We have used a pure convolutional network using Depthwise convolutions and in pl
 
 **Total Parameters used: 194880**
 
+<img width="455" alt="Screenshot 2023-07-23 at 7 13 04 PM" src="https://github.com/haresh93/ERA-submissions/assets/9997345/d162d401-8596-4dc2-a789-79c8c03b0db7">
+
+
 ## Image Augmentation Techniques used
 The following Image Augmentation techniques were used:
 
