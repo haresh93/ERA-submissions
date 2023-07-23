@@ -7,36 +7,79 @@ import matplotlib.pyplot as plt
 from utils import get_correct_pred_count
 from tqdm import tqdm
 
-def conv_block(in_channels, out_channels, kernel_size = 3, padding=0, dilation = False, groups = False):
-    layers = [
-        nn.Conv2d(in_channels = in_channels[0], out_channels = out_channels[0], kernel_size = kernel_size, padding = padding,
-                groups = (in_channels[0] if groups else 1)),
-        nn.BatchNorm2d(out_channels[0]),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.05),
-        nn.Conv2d(in_channels = in_channels[1], out_channels = out_channels[1], dilation=1, 
-                  kernel_size = kernel_size, padding = padding, groups = (in_channels[1] if groups else 1)),
-        nn.BatchNorm2d(out_channels[1]),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.05),
-        nn.Conv2d(in_channels = in_channels[2], out_channels = out_channels[2], kernel_size = 3, dilation=2, padding=padding,
-                  groups = (in_channels[1] if groups else 1))
-    ]
-    
-    return nn.Sequential(*layers)
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = conv_block((3, 32, 32), (32, 32, 32), kernel_size = 3, dilation = False, groups = False, padding=1)
-        self.conv2 = conv_block((32, 64, 64), (64, 64, 64), kernel_size = 3, dilation = False, groups = False,padding=1)
-        self.conv3 = conv_block((64, 128, 128), (128, 128, 128), kernel_size = 3, dilation = False, groups = True)
-        self.conv4 = conv_block((128, 256, 256), (256, 256, 256), kernel_size = 3, dilation = False, groups = True)
+        # Convolution Block 1
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels = 3, out_channels = 32, kernel_size=(3,3), padding = 1, bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(32),
+            nn.Dropout(0.5)
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(in_channels = 32, out_channels = 32, groups = 32, padding = 1, bias = False),
+            nn.Conv2d(in_channels = 32, out_channels = 128, kernel_size = (1,1), padding=0, bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(128),
+            nn.Dropout(0.5)
+        )
 
-        
+        # Transition Block 1
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(in_channels = 128, out_channels = 64, kernel_size = (3,3), padding=2, stride=2, dilation=2, bias = False)
+        )
+
+        # Convolution Block 2
+        self.conv4 = nn.Sequential(
+            nn.Conv2d(in_channels = 64, out_channels = 64, groups = 64, kernel_size = (3,3), padding=1, bias = False),
+            nn.Conv2d(in_channels = 64, out_channels = 128, kernel_size = (1,1), padding = 0,bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(128),
+            nn.Dropout(0.5)
+        )
+
+        self.conv5 = nn.Sequential(
+            nn.Conv2d(in_channels = 128, out_channels = 128, groups = 128, kernel_size = (3,3), padding = 1, bias = False),
+            nn.Conv2d(in_channels = 128, out_channels = 128, kernel_size = (1,1), padding = 0, bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(128),
+            nn.Dropout(0.5)
+        )
+
+        # Transition Block 2
+        self.conv6 = nn.Sequential(
+            nn.Conv2d(in_channels = 128, out_channels = 64, kernel_size=(3,3), padding = 2, dilation = 2, stride = 2, bias = False)
+        )
+
+        # Convolution Block 3
+        self.conv7 = nn.Sequential(
+            nn.Conv2d(in_channels = 64, out_channels = 64, groups = 64, kernel_size = (3,3), padding = 1, bias = False),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = (1,1), padding = 0, bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(64),
+            nn.Dropout(0.5)
+        )
+
+        self.conv8 = nn.Sequential(
+            nn.Conv2d(in_channels = 64, out_channels = 64, groups = 64, kernel_size = (3,3), padding = 1, bias = False),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = (1,1), padding = 0, bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(64),
+            nn.Dropout(0.5)
+        )
+
+        self.conv9 = nn.Sequential(
+            nn.Conv2d(in_channels = 64, out_channels = 64, groups = 64, kernel_size = (3,3), padding = 1, bias = False),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = (1,1), padding = 0, bias = False),
+            nn.ReLU(),
+            nn.BatchNorm2d(64),
+            nn.Dropout(0.5)
+        )
+
         self.gap = nn.AdaptiveAvgPool2d(1)
-        self.fc1 = nn.Sequential(
-            nn.Linear(256, 10)
+        self.conv10 = nn.Sequential(
+            nn.Conv2d(in_channels = 64, out_channels = 10, kernel_size = (1,1), padding = 0, bias = False),
         )
 
     def forward(self, x):
@@ -44,9 +87,13 @@ class Net(nn.Module):
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.conv6(x)
+        x = self.conv7(x)
+        x = self.conv8(x)
+        x = self.conv9(x)
         x = self.gap(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
+        x = self.conv10(x)
 
         x = x.view(-1, 10)
         return F.log_softmax(x, dim=-1)
