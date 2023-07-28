@@ -42,9 +42,9 @@ def get_lr(optimizer):
 #Building the model
 def run_model(model_name, epochs):
     if(model_name == DataModels.RESNET34.value):
-        model=ResNet34()
+        model=ResNet34().to(device)
     elif(model_name == DataModels.RESNET18.value):
-        model= ResNet18()
+        model= ResNet18().to(device)
 
     train_loader, test_loader = getDataLoaders()
 
