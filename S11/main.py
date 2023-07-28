@@ -41,16 +41,16 @@ def get_lr(optimizer):
 
 #Building the model
 def run_model(model_name, epochs):
+
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
+    
     if(model_name == DataModels.RESNET34.value):
         model=ResNet34().to(device)
     elif(model_name == DataModels.RESNET18.value):
         model= ResNet18().to(device)
 
     train_loader, test_loader = getDataLoaders()
-
-
-    use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda" if use_cuda else "cpu")
 
     # get_model_summary(model_name, device)
 
