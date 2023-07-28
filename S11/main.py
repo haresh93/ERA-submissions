@@ -22,14 +22,16 @@ train_acc = []
 test_acc = []
 misclassified_images = []
 
-dataOptions=Enum(RESNET18='RESNET18',RESNET34='RESNET34')
+class DataModels(Enum):
+    RESNET18='RESNET18'
+    RESNET34='RESNET34'
 
 def get_model_summary(model_name):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
-    if(model_name == dataOptions.RESNET18):
+    if(model_name == DataModels.RESNET18.value):
         model= ResNet18().to(device)
-    elif(model_name == dataOptions.RESNET34):
+    elif(model_name == DataModels.RESNET34.value):
         model = ResNet34().to(device)
     summary(model, input_size = (3, 32, 32))
 
@@ -39,9 +41,9 @@ def get_lr(optimizer):
 
 #Building the model
 def run_model(model_name, epochs):
-    if(model_name == dataOptions.RESNET34):
+    if(model_name == DataModels.RESNET34.value):
         model=ResNet34()
-    elif(model_name == dataOptions.RESNET18):
+    elif(model_name == DataModels.RESNET18.value):
         model= ResNet18()
 
     train_loader, test_loader = getDataLoaders()
