@@ -22,7 +22,7 @@ train_acc = []
 test_acc = []
 misclassified_images = []
 
-dataOptions=Enum('RESNET18','RESNET34')
+dataOptions=Enum(RESNET18='RESNET18',RESNET34='RESNET34')
 
 def get_model_summary(model_name):
     use_cuda = torch.cuda.is_available()
