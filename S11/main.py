@@ -1,8 +1,10 @@
 #Importing required modules 
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import cv2
 from torchvision import datasets, transforms
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -11,6 +13,7 @@ from torch_lr_finder import LRFinder
 from torch.optim.lr_scheduler import OneCycleLR
 from enum import Enum
 from torchsummary import summary
+from torchvision.utils import save_image
 
 from models.resnet import ResNet18,ResNet34
 from dataset import Cifar10SearchDataset
@@ -21,6 +24,12 @@ test_losses = []
 train_acc = []
 test_acc = []
 misclassified_images = []
+
+MISCLASSIFIED_IMAGES_DIR = "~/misclassifed_dir"
+
+def create_output_folder(output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
 class DataModels(Enum):
     RESNET18='RESNET18'
@@ -77,6 +86,9 @@ def run_model(model_name, epochs):
         model_train(model, device, train_loader, optimizer, scheduler, criterion, epoch)
         model_test(model, device, test_loader, criterion)
     
+    return misclassified_images
+    #save_misclassified_images()
+    
     
 def model_train(model, device, train_loader, optimizer, scheduler, criterion, epoch):
     model.train()
@@ -118,6 +130,7 @@ def model_test(model, device, test_loader, criterion):
     model.eval()
     test_loss = 0
     correct = 0
+    misclassified_images = []
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
@@ -139,6 +152,12 @@ def model_test(model, device, test_loader, criterion):
         test_loss, correct, len(test_loader.dataset),
         accuracy))
     test_acc.append(accuracy)
+
+def save_misclassified_images():
+    create_output_folder(MISCLASSIFIED_IMAGES_DIR)
+    for i in range(misclassified_images):
+        img_path = os.path.join(MISCLASSIFIED_IMAGES_DIR, f"misclassified_{i}.jpg")
+        save_image(misclassified_images[i][0].cpu().numpy().squeeze())
 
 def getDataLoaders():
    # Train and Test Transforms
