@@ -130,7 +130,7 @@ def model_test(model, device, test_loader, criterion):
     model.eval()
     test_loss = 0
     correct = 0
-    misclassified_images = []
+
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
