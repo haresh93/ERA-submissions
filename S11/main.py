@@ -25,7 +25,7 @@ train_acc = []
 test_acc = []
 misclassified_images = []
 
-MISCLASSIFIED_IMAGES_DIR = "~/misclassifed_dir"
+MISCLASSIFIED_IMAGES_DIR = "misclassifed_dir"
 
 def create_output_folder(output_folder):
     if not os.path.exists(output_folder):
@@ -48,6 +48,17 @@ def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
+def get_model(model_name):
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
+
+    if(model_name == DataModels.RESNET34.value):
+        model=ResNet34().to(device)
+    elif(model_name == DataModels.RESNET18.value):
+        model= ResNet18().to(device)
+    
+    return model
+
 #Building the model
 def run_model(model_name, epochs):
 
@@ -60,8 +71,6 @@ def run_model(model_name, epochs):
         model= ResNet18().to(device)
 
     train_loader, test_loader = getDataLoaders()
-
-    # get_model_summary(model_name, device)
 
     optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay = 0.0001)
     criterion = nn.CrossEntropyLoss()
@@ -77,8 +86,6 @@ def run_model(model_name, epochs):
         final_div_factor=1000,
         anneal_strategy='linear'
     )
-
-
 
     #Test and Train the data model
     for epoch in range(epochs):
@@ -155,9 +162,9 @@ def model_test(model, device, test_loader, criterion):
 
 def save_misclassified_images():
     create_output_folder(MISCLASSIFIED_IMAGES_DIR)
-    for i in range(misclassified_images):
+    for i in enumerate(misclassified_images):
         img_path = os.path.join(MISCLASSIFIED_IMAGES_DIR, f"misclassified_{i}.jpg")
-        save_image(misclassified_images[i][0].cpu().numpy().squeeze())
+        save_image(misclassified_images[i][0].cpu(), img_path)
 
 def getDataLoaders():
    # Train and Test Transforms
