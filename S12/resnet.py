@@ -172,7 +172,7 @@ class LitResnet(LightningModule):
         if stage == 'fit' or stage is None:
             cifar_full = Cifar10SearchDataset(self.data_dir, train = True, transform = self.training_transforms)
             self.cifar_train = cifar_full
-            self.cifar_test = Cifar10SearchDataset(self.data_dir, train=False, transform = self.test_transforms)
+            self.cifar_val = Cifar10SearchDataset(self.data_dir, train=False, transform = self.test_transforms)
 
         if stage == 'test' or stage is None:
             self.cifar_test = Cifar10SearchDataset(self.data_dir, train=False, transform = self.test_transforms)
