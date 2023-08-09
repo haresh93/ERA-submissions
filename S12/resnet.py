@@ -17,7 +17,7 @@ from dataset import Cifar10SearchDataset
 
 PATH_DATASETS  = '~/data/CIFAR10'
 AVAIL_GPUS = min(1, torch.cuda.device_count())
-BATCH_SIZE = 256 if AVAIL_GPUS else 64
+BATCH_SIZE = 512 if AVAIL_GPUS else 64
 EPOCHS = 24
 
 class LitResnet(LightningModule):
@@ -147,7 +147,7 @@ class LitResnet(LightningModule):
 
         scheduler = OneCycleLR(
             optimizer,
-            max_lr = 0.018,
+            max_lr = 0.023,
             steps_per_epoch=len(self.train_dataloader()),
             epochs = EPOCHS,
             pct_start = 5/EPOCHS,
