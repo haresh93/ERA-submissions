@@ -61,6 +61,7 @@ class LitResnet(LightningModule):
             nn.Linear(512, 10)
         )
 
+        self.misclassified_images = []
         self.accuracy = Accuracy(task='multiclass', num_classes = 10)
         self.data_dir = data_dir
         self.learning_rate = learning_rate
@@ -122,6 +123,10 @@ class LitResnet(LightningModule):
         preds = torch.argmax(logits, dim=1)
         self.accuracy(preds, y)
 
+        # for i in range(len(pred)):
+        #     if pred[i] != target[i]:
+        #         self.misclassified_images.append([data[i], pred[i], target[i]])
+
         # Calling self.log will surface up scalars for you in TensorBoard
         self.log("val_loss", loss, prog_bar=True)
         self.log("val_acc", self.accuracy, prog_bar=True)
@@ -166,7 +171,7 @@ class LitResnet(LightningModule):
     def setup(self, stage = None):
         if stage == 'fit' or stage is None:
             cifar_full = Cifar10SearchDataset(self.data_dir, train = True, transform = self.training_transforms)
-            self.cifar_train, self.cifar_val = random_split(cifar_full, [45000, 5000])
+            self.cifar_train, self.cifar_val = random_split(cifar_full, [48000, 2000])
 
         if stage == 'test' or stage is None:
             self.cifar_test = Cifar10SearchDataset(self.data_dir, train=False, transform = self.test_transforms)
